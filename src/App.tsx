@@ -1,7 +1,12 @@
 import React from "react";
 import "./App.css";
 import { useState } from "react";
-import { formatDate, formatDateMin, formatTimeDifference } from "./utils";
+import {
+  formatDate,
+  formatDateMin,
+  formatHoursMins,
+  formatTimeDifference,
+} from "./utils";
 
 function App() {
   const [query, setQuery] = useState<string>("");
@@ -91,6 +96,24 @@ function App() {
     setLoading(false);
   };
 
+  const totalTimeSum = data.reduce(
+    (sum, item) =>
+      sum +
+      (new Date(item.pilotage_end_dt_time).getTime() -
+        new Date(item.pilotage_cst_dt_time).getTime()),
+    0
+  );
+
+  const idleTimeSum = data.reduce((sum, item, index) => {
+    if (index === 0) return sum;
+    const prevItem = data[index - 1];
+    return (
+      sum +
+      (new Date(item.pilotage_cst_dt_time).getTime() -
+        new Date(prevItem.pilotage_end_dt_time).getTime())
+    );
+  }, 0);
+
   return (
     <div className="App">
       <h1>Pilotage Data Search</h1>
@@ -119,49 +142,93 @@ function App() {
       <div className="table-container">
         {error && <div className="error">{error}</div>}
         {data.length > 0 && !error && (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Log Time (SGT)</th>
-                <th>From-To</th>
-                <th>Service Requested</th>
-                <th>Vehicle Arrival</th>
-                <th>Pilot Arrival</th>
-                <th>Actual Service Time (Duration)</th>
-                <th>Total Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item) => (
-                <tr key={item.pilotage_snapshot_dt}>
-                  <td>{formatDate(item.pilotage_snapshot_dt)}</td>
+          <div className="table-container-inside">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Log Time (SGT)</th>
+                  <th>From-To</th>
+                  <th>Service Requested</th>
+                  <th>Vehicle Arrival</th>
+                  <th>Pilot Arrival</th>
+                  <th>Actual Service Time (Duration)</th>
+                  <th>Total Time</th>
+                  <th>
+                    Idle Time
+                    <br />
+                    (Between Services)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((item, index) => {
+                  const prevItem = index > 0 ? data[index - 1] : null;
+                  return (
+                    <tr key={item.pilotage_snapshot_dt}>
+                      <td>{formatDate(item.pilotage_snapshot_dt)}</td>
+                      <td>
+                        {item.pilotage_loc_from_code} -{" "}
+                        {item.pilotage_loc_to_code}
+                      </td>
+                      <td>{formatDateMin(item.pilotage_cst_dt_time)}</td>
+                      <td>{formatDateMin(item.pilotage_arrival_dt_time)}</td>
+                      <td>{formatDateMin(item.pilotage_onboard_dt_time)}</td>
+                      <td>
+                        {formatDateMin(item.pilotage_start_dt_time)} -{" "}
+                        {formatDateMin(item.pilotage_end_dt_time)} &nbsp; {"("}
+                        {formatTimeDifference(
+                          item.pilotage_end_dt_time,
+                          item.pilotage_start_dt_time,
+                          false
+                        )}
+                        {")"}
+                      </td>
+                      <td className="center-column">
+                        {formatTimeDifference(
+                          item.pilotage_end_dt_time,
+                          item.pilotage_cst_dt_time,
+                          true
+                        )}
+                      </td>
+
+                      <td className="center-column">
+                        {prevItem
+                          ? formatTimeDifference(
+                              item.pilotage_cst_dt_time,
+                              prevItem.pilotage_end_dt_time,
+                              true
+                            )
+                          : "-"}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={5} className="empty-column"></td>
                   <td>
-                    {item.pilotage_loc_from_code} - {item.pilotage_loc_to_code}
+                    <strong>Total</strong>
                   </td>
-                  <td>{formatDateMin(item.pilotage_cst_dt_time)}</td>
-                  <td>{formatDateMin(item.pilotage_arrival_dt_time)}</td>
-                  <td>{formatDateMin(item.pilotage_onboard_dt_time)}</td>
-                  <td>
-                    {formatDateMin(item.pilotage_start_dt_time)} -{" "}
-                    {formatDateMin(item.pilotage_end_dt_time)} &nbsp; {"("}
-                    {formatTimeDifference(
-                      item.pilotage_end_dt_time,
-                      item.pilotage_start_dt_time,
-                      false
-                    )}
-                    {")"}
+                  <td className="center-column">
+                    {formatHoursMins(totalTimeSum)}
                   </td>
-                  <td>
-                    {formatTimeDifference(
-                      item.pilotage_end_dt_time,
-                      item.pilotage_cst_dt_time,
-                      true
-                    )}
+                  <td className="center-column">
+                    {formatHoursMins(idleTimeSum)}
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+                <tr>
+                  <td colSpan={5} className="empty-column"></td>
+                  <td>
+                    <strong>Overall Total</strong>
+                  </td>
+                  <td colSpan={2} className="center-column">
+                    {formatHoursMins(totalTimeSum + idleTimeSum)}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         )}
       </div>
     </div>

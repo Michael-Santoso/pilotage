@@ -38,6 +38,15 @@
 .table-container {
   display: flex;
   justify-content: center;
+  align-self: center;
+  width: 80%;
+}
+
+.table-container-inside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .error {
@@ -63,9 +72,8 @@
 }
 
 .data-table {
-  width: 80%;
+  width: 100%;
   margin-top: 20px;
-  margin-bottom: 20px;
   border-collapse: collapse;
 }
 
@@ -78,4 +86,29 @@ td {
 
 .data-table th {
   background-color: #f2f2f2;
+}
+
+.data-table th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.summary-table td {
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border-top: 1px solid black;
+}
+
+.empty-column {
+  border: none;
+}
+
+.center-column {
+  text-align: center;
 }

@@ -25,6 +25,13 @@ export const formatDateMin = (isoString: string) => {
   });
 };
 
+export const formatHoursMins = (milliseconds: number) => {
+  const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+  const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+
+  return hours === 0 ? `${minutes} mins` : `${hours} hrs ${minutes} mins`;
+};
+
 export const formatTimeDifference = (
   endTime: string,
   startTime: string,
@@ -39,10 +46,8 @@ export const formatTimeDifference = (
   const minutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
 
   if (flag) {
-    return `${hours} hours ${minutes} minutes`;
+    return `${hours} hrs ${minutes} mins`;
   } else {
-    return hours === 0
-      ? `${minutes} minutes`
-      : `${hours} hours ${minutes} minutes`;
+    return hours === 0 ? `${minutes} mins` : `${hours} hrs ${minutes} mins`;
   }
 };
