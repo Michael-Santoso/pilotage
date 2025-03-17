@@ -1,46 +1,75 @@
-# Getting Started with Create React App
+# Pilotage Data Search
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Pilotage Data Search is a website to show vessel pilotage data, designed for truck drivers to analyse rough wait time of previous services
 
-## Available Scripts
+## Table of Contents
 
-In the project directory, you can run:
+- [Description](#description)
+- [Technologies Used](#technologies-used)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Assumptions](#assumptions)
 
-### `npm start`
+## Description
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This project is a web-based application designed to assist truck drivers predict the rough wait time. It tracks, calculates, and displays service times of recent pilotage moments. As a result, drivers can be as efficient as possible in delivering their last mile deliveries.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Technologies Used
 
-### `npm test`
+- **React** (for the frontend UI)
+- **TypeScript** (for type safety)
+- **CSS** (for styling)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Installation
 
-### `npm run build`
+Follow the steps below to get the project up and running on your local machine.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### Clone the repository:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+git clone https://github.com/Michael-Santoso/pilotage.git
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+#### Navigate into the project directory:
 
-### `npm run eject`
+```bash
+cd pilotage
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+#### Install dependencies:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm install
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+#### Run the project:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+npm start
+```
 
-## Learn More
+## Usage
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Once the application is running, you can interact with it by:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Searching IMO number**: The search bar finds the data for a specific IMO number, completed with if-checks.
+- **Reading data table**: This table presents service data including log times, service requested time, vehicle arrival time, pilot arrival time, actual service time, total time and idle time.
+- **Viewing overall total**: The application calculates the overall time at the bottom.
+
+## Assumptions
+
+There are some assumptions made for this application:
+
+- The time is shown in **24 hour time format**. Seconds are also ignored in this case due to (1) less significance in bigger picture and (2) API showing same seconds for all time data.
+- The data is shown in **chronological order**, from start until the end.
+- Since the table displays only past data of services, truck drivers are **assumed to be able to predict** their most efficient route for their last mile deliveries from these data.
+- The column **Log Time (SGT)** displays the time after all the data has succesfully logged into the system (not showing NULL values). This is to reflect the overall process flow, showing the time when the data entry for a specific record becomes fully completed.
+- The column **Idle Time (Between Services)** displays the time between each service. In the case of first service, the value is set to "-".
+
+Through these assumptions, here are our thought process of the applications logical flow:
+
+- The column **Total Time** shows the time from when the service is requested until when the service has ended. This helps truck drivers estimate the service time.
+- The column **Idle Time (Between Services)** shows the time in-between service to estimate the duration when they have arrived at anchorages/pilot boarding ground.
+- The last **Overall Total** shows the time taken for the whole process of requesting service, whole service process, and idle time as well. Obviously, when the items are moving between more places, the time shown tends to be longer. However, the **Total of Total Time and Idle Time** can show the proportion of time taken by the respective factor, allowing the drivers to optimize their route planning.
+
+Overall, we hope that the application is able to assist truck drivers optimize their route planning to the best of their ability. Through these past data, they can roughly estimate how long each process take, then find the best planning for their current/future route timing.
